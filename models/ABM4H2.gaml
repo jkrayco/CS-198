@@ -1,4 +1,4 @@
-model reactor2
+model ABM4H2
 
 global{
 	//canvas
