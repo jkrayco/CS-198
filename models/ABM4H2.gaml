@@ -1,16 +1,18 @@
 model ABM4H2
 
 global{
-	//canvas
+	//batch run counter
+	int run <- 1;
+	
+	//environment
 	int environmentWidth <- 70; 	//x-axis
 	int environmentHeight <- 70; 	//y-axis
 	int environmentLength <- 70;	//z-axis
-	geometry shape <- box(environmentWidth, environmentHeight, environmentLength); //beaker represented as a cube
 		
 	//initial number of molecules
 	int initial_photon <- 800;
 	int initial_cat <- 400;
-	int initial_sulfide <- 60;
+	int initial_sulfide <- 12;
 	int initial_sulfite <- 24;
 	int initial_hydrogen <- 0;
 	int initial_electron <- 0;
@@ -109,7 +111,11 @@ global{
 		}	
 		create cat_S2O3 number:initial_catS2O3{
 			location <- {rnd(environmentWidth),rnd(environmentHeight),rnd(environmentLength)};
-		}	
+		}
+		if (run = 1){
+			save ["run","time", "sulfide", "sulfite", "hydrogen"] to: "result_4th_Hour.csv" type:csv;	
+		}
+		save ["time", "sulfide", "sulfite", "hydrogen"] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
 	}
 	
 	reflex update {
@@ -117,10 +123,10 @@ global{
 			location <- {0,rnd(environmentHeight),rnd(environmentLength)}; //new photons arrive
 		}
 		//saves the number of hydrogen produced per timestep in a csv file
-		save [time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "results.csv" type:csv;
-		if (cycle = 7500){
-			do pause;
-		}
+		save [time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+		//if (cycle = 7500){
+		//	do pause;
+		//}
 	}
 }
 
@@ -494,13 +500,12 @@ species cat_S2O3 skills:[moving3D]{ //cat-S2O3 2-
 	}
 }
 
-experiment now type:gui{
-	
+//experiment now type:gui {
+experiment now type:gui {
 	//parameter "Photons: " var:initial_photon min:1 max:500 category:"Photons";
 	//parameter "Catalyst: " var:initial_cat min:1 max:200 category:"Catalyst Molecules";
 	//parameter "Sulfide: " var:initial_sulfide min:0 max:500 category:"S2 molecules";
 	//parameter "Sulfite: " var:initial_sulfite min:0 max:500 category:"S2 molecules";
-	
 	
 	/*
 	parameter "K1: " var:K1 min:1 max:100 category: "K1";
@@ -548,6 +553,7 @@ experiment now type:gui{
 		}
 		*/
 		//displays a chart indicating the number of molecules of each agent over time
+		/*
 		display Analytical{
 			chart "Molecules vs Time"{
 				//data "Photon" value:length(photon) color:#yellow;
@@ -558,6 +564,17 @@ experiment now type:gui{
 				data "Hydrogen" value:length(hydrogen) color:#cyan;
 			}
 		}
+		*/
 		//monitor "Hydrogen" value:length(hydrogen);
+	}
+}
+
+experiment batch type:batch repeat:1 until: cycle = 7500 {
+	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
+	parameter "Sulfide:" var: initial_sulfide among:[24, 60, 120, 240, 720];
+	parameter "Run:" var: run among: [1,2,3];
+	
+	reflex save4thHour when: cycle = 2100{
+		save [run, time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_4th_hour.csv" type:csv;
 	}
 }
