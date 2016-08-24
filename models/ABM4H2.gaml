@@ -571,7 +571,7 @@ experiment now type:gui {
 
 experiment batch type:batch repeat:1 until: cycle = 7500 {
 	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
-	parameter "Sulfide:" var: initial_sulfide among:[24, 60, 120, 240, 720];
+	parameter "Sulfite:" var: initial_sulfide among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
 	
 	reflex save4thHour when: cycle = 2100{
