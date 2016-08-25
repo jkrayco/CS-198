@@ -113,7 +113,7 @@ global{
 			location <- {rnd(environmentWidth),rnd(environmentHeight),rnd(environmentLength)};
 		}
 		if (run = 1){
-			save ["run","time", "sulfide", "sulfite", "hydrogen"] to: "result_4th_Hour.csv" type:csv;	
+			save ["run","time", "sulfide", "sulfite", "hydrogen"] to: "result_4th_hour.csv" type:csv;	
 		}
 		save ["time", "sulfide", "sulfite", "hydrogen"] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
 	}
@@ -573,7 +573,7 @@ experiment now type:gui {
 	}
 }
 
-experiment batch type:batch repeat:1 until: cycle = 7500 {
+experiment batch type:batch repeat:1 until: cycle = 6300 {
 	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
