@@ -118,15 +118,19 @@ global{
 		save ["time", "sulfide", "sulfite", "hydrogen"] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
 	}
 	
-	reflex update {
+	reflex updateLight {
 		create photon number:((initial_photon-length(photon))*rnd(200)/100){
 			location <- {0,rnd(environmentHeight),rnd(environmentLength)}; //new photons arrive
 		}
+	}
+	reflex updateOutput{
 		//saves the number of hydrogen produced per timestep in a csv file
 		save [time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
-		//if (cycle = 7500){
-		//	do pause;
-		//}
+		
+		//saves the number of hydrogen produced on 4th hour in a csv file
+		if (cycle = 2100){
+			save [run, time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_4th_hour.csv" type:csv;
+		}
 	}
 }
 
@@ -573,8 +577,4 @@ experiment batch type:batch repeat:1 until: cycle = 7500 {
 	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
-	
-	reflex save4thHour when: cycle = 2100{
-		save [run, time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_4th_hour.csv" type:csv;
-	}
 }
