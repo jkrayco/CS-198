@@ -1,13 +1,15 @@
 model ABM4H2
 
 global{
-	//batch run counter
+	//batch variables
+	string batchCode <- "";
 	int run <- 1;
 	
 	//environment
 	int environmentWidth <- 70; 	//x-axis
 	int environmentHeight <- 70; 	//y-axis
 	int environmentLength <- 70;	//z-axis
+	geometry shape <- box(environmentWidth, environmentLength, environmentHeight); //beaker represented as a cube
 		
 	//initial number of molecules
 	int initial_photon <- 800;
@@ -113,9 +115,9 @@ global{
 			location <- {rnd(environmentWidth),rnd(environmentHeight),rnd(environmentLength)};
 		}
 		if (run = 1){
-			save ["run","time", "sulfide", "sulfite", "hydrogen"] to: "result_4th_Hour.csv" type:csv;	
+			save ["run", "time", "sulfide", "sulfite", "hydrogen"] to: "result_4th_Hour.csv" type:csv;	
 		}
-		save ["time", "sulfide", "sulfite", "hydrogen"] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+		save ["time", "sulfide", "sulfite", "hydrogen"] to: "result_"+batchCode+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
 	}
 	
 	reflex updateLight {
@@ -125,7 +127,7 @@ global{
 	}
 	reflex updateOutput{
 		//saves the number of hydrogen produced per timestep in a csv file
-		save [time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+		save [time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_"+batchCode+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
 		
 		//saves the number of hydrogen produced on 4th hour in a csv file
 		if (cycle = 2100){
@@ -230,7 +232,7 @@ species cat_H2O skills:[moving3D]{ //cat-H2O
 		}
 	}
 	aspect base{
-		draw square(3) color:#purple;
+		draw cube(3) color:#purple;
 	}
 }
 
@@ -239,7 +241,7 @@ species cat_OH skills:[moving3D]{ //cat-OH -
 		do wander_3D;
 	}
 	aspect base{
-		draw square(3) color:#blue;
+		draw cube(3) color:#blue;
 	}
 }
 
@@ -262,7 +264,7 @@ species cat_H skills:[moving3D]{ //cat-H*
 		}
 	}
 	aspect base{
-		draw square(3) color:#blue;
+		draw cube(3) color:#blue;
 	}
 }
 
@@ -354,7 +356,7 @@ species cat_HS skills:[moving3D]{ //cat-HS -
 		}
 	}
 	aspect base{
-		draw square(3) color:#green;
+		draw cube(3) color:#green;
 	}
 }
 
@@ -383,7 +385,7 @@ species cat_sulfite skills:[moving3D]{ //cat-SO3 2-
 		do wander_3D;
 	}
 	aspect base{
-		draw square(3) color:#brown;
+		draw cube(3) color:#brown;
 	}
 }
 
@@ -406,7 +408,7 @@ species cat_HS0 skills:[moving3D]{ //cat-HS.
 		}
 	}
 	aspect base{
-		draw square(3) color:#orange;
+		draw cube(3) color:#orange;
 	}
 }
 
@@ -429,7 +431,7 @@ species cat_S0 skills:[moving3D]{ //cat-S. -
 		}
 	}
 	aspect base{
-		draw square(3) color:#yellow;
+		draw cube(3) color:#yellow;
 	}
 }
 
@@ -448,7 +450,7 @@ species cat_HS2 skills:[moving3D]{ //cat-HS2 -
 		}
 	}
 	aspect base{
-		draw square(3) color:#yellowgreen;
+		draw cube(3) color:#yellowgreen;
 	}
 }
 
@@ -500,7 +502,7 @@ species cat_S2O3 skills:[moving3D]{ //cat-S2O3 2-
 		do wander_3D;
 	}
 	aspect base{
-		draw square(3) color:#orange;
+		draw cube(3) color:#orange;
 	}
 }
 
@@ -557,7 +559,6 @@ experiment now type:gui {
 		}
 		*/
 		//displays a chart indicating the number of molecules of each agent over time
-		/*
 		display Analytical{
 			chart "Molecules vs Time"{
 				//data "Photon" value:length(photon) color:#yellow;
@@ -568,12 +569,12 @@ experiment now type:gui {
 				data "Hydrogen" value:length(hydrogen) color:#cyan;
 			}
 		}
-		*/
 		//monitor "Hydrogen" value:length(hydrogen);
 	}
 }
 
-experiment batch type:batch repeat:1 until: cycle = 7500 {
+experiment batch type:batch repeat:1 until: cycle = 6300 {
+	parameter "Batch Code" var: batchCode;
 	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
