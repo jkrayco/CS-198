@@ -3,19 +3,21 @@ model ABM4H2
 global{
 	//batch variables
 	string batchCode <- "";
+	int cph <- int(2100/4);
 	int run <- 1;
+	int side <- 70;
 	
 	//environment
-	int environmentWidth <- 70; 	//x-axis
-	int environmentHeight <- 70; 	//y-axis
-	int environmentLength <- 70;	//z-axis
+	int environmentWidth <- side;	//x-axis
+	int environmentHeight <- side;	//y-axis
+	int environmentLength <- side;	//z-axis
 	geometry shape <- box(environmentWidth, environmentLength, environmentHeight); //beaker represented as a cube
 		
 	//initial number of molecules
-	int initial_photon <- 800;
+	int initial_photon <- 800;//int((side^2)/3);		
 	int initial_cat <- 400;
-	int initial_sulfide <- 12;
-	int initial_sulfite <- 24;
+	int initial_sulfide <- 240;
+	int initial_sulfite <- 240;
 	int initial_hydrogen <- 0;
 	int initial_electron <- 0;
 	int initial_hole <- 0;
@@ -34,21 +36,21 @@ global{
 	int initial_catS2O3 <- 0;
 	
 	//rates of the 15 reactions
-	float K1 <- 28.0; //hv + cat -> cat + electron + hole						cat
-	float K2 <- 98.0; //98.0 //electron + hole -> {} 							either
-	float K3 <- 0.030; //0.0050 //cat + H2O -> cat-H2O 							cat
-	float K4 <- 0.16; //0.016 //S 2- + H2O -> HS- + OH -						S
-	float K5 <- 90.00; //1.00 //cat + HS - -> cat-HS -							HS
-	float K6 <- 0.30; //cat + SO3 2- -> cat-SO3 2-								SO3
-	float K7 <- 90.0; //10.0 //cat-H2O + cat + electron -> cat-H. + cat-OH - 	cat-H2O
-	float K8 <- 100.0; //2cat-H. -> 2cat + H2									cat-H.
-	float K9 <- 98.0; //92.0 //cat-HS - + hole -> cat-HS. 						cat-HS
-	float K10 <- 51.0; //cat-HS. + cat-OH - -> cat-S. - + cat + H2O				cat-HS.
-	float K11 <- 93.0; //cat-HS. + cat-S. - -> cat-HS2 - + cat					cat-S.
-	float K12 <- 0.11; //cat-HS2 - -> cat + HS2 -								cat-HS2
-	float K13 <- 70.0; //HS2 - + SO3 2- -> S2O3 2- + HS -						HS2
-	float K14 <- 0.051; //cat + OH - -> cat-OH - 								OH
-	float K15 <- 8.95; //cat + S2O3 2- -> cat-S2O3 2-							S2O3
+	float K1 <- 28.0;	//hv + cat -> cat + electron + hole				
+	float K2 <- 98.0;	//electron + hole -> {} 						
+	float K3 <- 0.030;	//cat + H2O -> cat-H2O 							
+	float K4 <- 0.16;	//S 2- + H2O -> HS- + OH -						
+	float K5 <- 90.00;	//cat + HS - -> cat-HS -							
+	float K6 <- 0.30;	//cat + SO3 2- -> cat-SO3 2-						
+	float K7 <- 90.0;	//cat-H2O + cat + electron -> cat-H. + cat-OH - 	
+	float K8 <- 100.0;	//2cat-H. -> 2cat + H2								
+	float K9 <- 98.0;	//cat-HS - + hole -> cat-HS. 						
+	float K10 <- 51.0;	//cat-HS. + cat-OH - -> cat-S. - + cat + H2O			
+	float K11 <- 93.0;	//cat-HS. + cat-S. - -> cat-HS2 - + cat					
+	float K12 <- 0.11;	//cat-HS2 - -> cat + HS2 -								
+	float K13 <- 70.0;	//HS2 - + SO3 2- -> S2O3 2- + HS -						
+	float K14 <- 0.051;	//cat + OH - -> cat-OH - 								
+	float K15 <- 8.95;	//cat + S2O3 2- -> cat-S2O3 2-	
 	
 	int collision_range <- 5;
 	
@@ -115,9 +117,10 @@ global{
 			location <- {rnd(environmentWidth),rnd(environmentHeight),rnd(environmentLength)};
 		}
 		if (run = 1){
-			save ["run", "time", "sulfide", "sulfite", "hydrogen"] to: "result_4th_Hour.csv" type:csv;	
+			save ["run", "cat", "S", "SO3", "H2"] to: batchCode+"_hour4.csv" type:csv;
 		}
-		save ["time", "sulfide", "sulfite", "hydrogen"] to: "result_"+batchCode+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+		//save ["time", "cat", "S", "SO3", "H2"] to: batchCode+"_cph"+cph+"_catalyst"+initial_cat+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+	
 	}
 	
 	reflex updateLight {
@@ -126,12 +129,18 @@ global{
 		}
 	}
 	reflex updateOutput{
-		//saves the number of hydrogen produced per timestep in a csv file
-		save [time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_"+batchCode+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+		//saves the number of hydrogen produced per cycle-hour in a csv file
+		//if (mod(cycle,cph) = 0){
+			//save [run, cycle/cph, length(cat), length(sulfide), length(sulfite), length(hydrogen)] to: batchCode+"_cph"+cph+"_catalyst"+initial_cat+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+		//}
 		
 		//saves the number of hydrogen produced on 4th hour in a csv file
-		if (cycle = 2100){
-			save [run, time, initial_sulfide, initial_sulfite, length(hydrogen)] to: "result_4th_hour.csv" type:csv;
+		if (cycle = cph*4){
+			save [run, length(cat), length(sulfide), length(sulfite), length(hydrogen)] to: batchCode+"_hour4.csv" type:csv;
+			/*if (cycle = 8*cph){
+				do pause;	
+			}
+			*/
 		}
 	}
 }
@@ -546,7 +555,7 @@ experiment now type:gui {
 		}*/
 		//shows the main agents involved in the hydrogen reaction
 		/*
-		display Graphical type:opengl{
+		display Visual type:opengl{
 			graphics "env"{
 				draw box(environmentWidth,environmentHeight,environmentLength) color:#black empty:true;
 			}
@@ -559,23 +568,27 @@ experiment now type:gui {
 		}
 		*/
 		//displays a chart indicating the number of molecules of each agent over time
-		display Analytical{
+		display Graphical{
 			chart "Molecules vs Time"{
-				//data "Photon" value:length(photon) color:#yellow;
-				//data "Catalyst" value:length(cat) color:#red;
-				//data "Electron" value:length(electron) color:#silver;
-				//data "cat-H2O" value:length(cat_H2O) color:#purple;
-				//data "cat-H*" value:length(cat_H) color:#blue;
+				data "Photon" value:length(photon) color:#yellow;
+				data "Catalyst" value:length(cat) color:#red;
+				data "Electron" value:length(electron) color:#silver;
+				data "cat-H2O" value:length(cat_H2O) color:#purple;
+				data "cat-H*" value:length(cat_H) color:#blue;
 				data "Hydrogen" value:length(hydrogen) color:#cyan;
 			}
 		}
-		//monitor "Hydrogen" value:length(hydrogen);
+		monitor "Catalyst" value:length(cat);
+		monitor "Sulfide" value:length(sulfide);
+		monitor "Sulfite" value:length(sulfite);
+		monitor "Hydrogen" value:length(hydrogen);
 	}
 }
 
-experiment batch type:batch repeat:1 until: cycle = 6300 {
-	parameter "Batch Code" var: batchCode;
-	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
-	parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
-	parameter "Run:" var: run among: [1,2,3];
+experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){
+	parameter "Batch Code" var: batchCode among: ["xphyacatK1"];
+	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
+	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
+	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
+	//parameter "Run:" var: run among: [1,2,3];
 }
