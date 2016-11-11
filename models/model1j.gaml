@@ -1,8 +1,8 @@
-model model1h	//lives + k1a + bounce
+model model1j	//lives + k1b + bounce2
 
 global{
 	//batch variables
-	string batchCode <- "model1h";
+	string batchCode <- "model1j";
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
@@ -159,7 +159,7 @@ species cat skills:[moving3D]{ //catalyst
 		}
 	}
 	reflex forward1 when: (length(photon at_distance collision_range)>=1){
-		if (rnd_float(100)<K1){ //reaction 1: hv (photon) + cat -> electron + hole
+		if (rnd_float(100)<K1*(1-(length(HS2)/(side^2)))){ //reaction 1: hv (photon) + cat -> electron + hole
 			create electron number:1{
 				location <- myself.location;
 				do move speed:0.5 heading:rnd(360);
@@ -175,7 +175,11 @@ species cat skills:[moving3D]{ //catalyst
 			if (lives <= 0){
 				do die;
 			}
-			K1 <- K1*(1-(length(HS2)/(side^2)));
+		}
+		else {
+			ask photon closest_to self{
+				do move speed:5 heading:180;
+			}
 		}
 	}
 	aspect base{
@@ -490,7 +494,7 @@ species HS2 skills:[moving3D]{ //HS2 -
 	}
 	reflex bounce when: (length(photon at_distance collision_range)>=1){
 		ask photon closest_to self{
-			do move speed:1 heading:180;
+			do move speed:5 heading:180;
 		}
 	}
 	aspect base{
@@ -582,9 +586,9 @@ experiment now type:gui {
 }
 
 experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){
-	parameter "Batch Code" var: batchCode among: ["model1h_cat"];
+	parameter "Batch Code" var: batchCode among: ["model1j_cat"];
 	parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
 	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
-	//parameter "Run:" var: run among: [1,2,3];
+	parameter "Run:" var: run among: [1,2,3];
 }
