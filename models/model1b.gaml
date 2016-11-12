@@ -1,8 +1,8 @@
-model ABM4H2
+model model1b	//k1a
 
 global{
 	//batch variables
-	string batchCode <- "";
+	string batchCode <- "model1b";
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
@@ -157,7 +157,7 @@ species cat skills:[moving3D]{ //catalyst
 		}
 	}
 	reflex forward1 when: (length(photon at_distance collision_range)>=1){
-		if (rnd_float(100)<(K1*(1-(length(HS2)/(side^2))))){ //reaction 1: hv (photon) + cat -> electron + hole
+		if (rnd_float(100)<K1){ //reaction 1: hv (photon) + cat -> electron + hole
 			create electron number:1{
 				location <- myself.location;
 				do move speed:0.5 heading:rnd(360);
@@ -169,6 +169,8 @@ species cat skills:[moving3D]{ //catalyst
 			ask photon closest_to self{
 				do die;
 			}
+			
+			K1 <- K1*(1-(length(HS2)/(side^2)));
 		}
 	}
 	aspect base{
@@ -586,7 +588,7 @@ experiment now type:gui {
 }
 
 experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){
-	parameter "Batch Code" var: batchCode among: ["xphyacatK1"];
+	parameter "Batch Code" var: batchCode among: ["model1b_cat"];
 	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
 	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];

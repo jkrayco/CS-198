@@ -1,8 +1,8 @@
-model ABM4H2
+model model1f	//lives + k1b
 
 global{
 	//batch variables
-	string batchCode <- "";
+	string batchCode <- "model1f";
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
@@ -592,7 +592,7 @@ experiment now type:gui {
 }
 
 experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){
-	parameter "Batch Code" var: batchCode among: ["xphyacatK1"];
+	parameter "Batch Code" var: batchCode among: ["model1f_cat"];
 	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
 	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
