@@ -130,17 +130,18 @@ global{
 	}
 	reflex updateOutput{
 		//saves the number of hydrogen produced per cycle-hour in a csv file
-		//if (mod(cycle,cph) = 0){
-			//save [run, cycle/cph, length(cat), length(sulfide), length(sulfite), length(hydrogen)] to: batchCode+"_cph"+cph+"_catalyst"+initial_cat+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
-		//}
+		if (mod(cycle,cph) = 0){
+			/*
+			save [cycle/cph, length(cat), length(sulfide), length(sulfite), length(hydrogen)] to: batchCode+"_cph"+cph+"_catalyst"+initial_cat+"_sulfide"+initial_sulfide+"_sulfite"+initial_sulfite+"_run"+run+".csv" type:csv;
+			if (cycle = 8*cph){
+				do pause;	
+			}
+			*/
+		}
 		
 		//saves the number of hydrogen produced on 4th hour in a csv file
 		if (cycle = cph*4){
 			save [run, length(cat), length(sulfide), length(sulfite), length(hydrogen)] to: batchCode+"_hour4.csv" type:csv;
-			/*if (cycle = 8*cph){
-				do pause;	
-			}
-			*/
 		}
 	}
 }
@@ -518,27 +519,9 @@ species cat_S2O3 skills:[moving3D]{ //cat-S2O3 2-
 //experiment now type:gui {
 experiment now type:gui {
 	//parameter "Photons: " var:initial_photon min:1 max:500 category:"Photons";
-	//parameter "Catalyst: " var:initial_cat min:1 max:200 category:"Catalyst Molecules";
-	//parameter "Sulfide: " var:initial_sulfide min:0 max:500 category:"S2 molecules";
-	//parameter "Sulfite: " var:initial_sulfite min:0 max:500 category:"S2 molecules";
-	
-	/*
-	parameter "K1: " var:K1 min:1 max:100 category: "K1";
-	parameter "K2: " var:K2 min:1 max:100 category: "K2";
-	parameter "K3: " var:K3 min:1 max:100 category: "K3";
-	parameter "K4: " var:K4 min:1 max:100 category: "K4";
-	parameter "K5: " var:K5 min:1 max:100 category: "K5";
-	parameter "K6: " var:K6 min:1 max:100 category: "K6";
-	parameter "K7: " var:K7 min:1 max:100 category: "K7";
-	parameter "K8: " var:K8 min:1 max:100 category: "K8";
-	parameter "K9: " var:K9 min:1 max:100 category: "K9";
-	parameter "K10: " var:K10 min:1 max:100 category: "K10";
-	parameter "K11: " var:K11 min:1 max:100 category: "K11";
-	parameter "K12: " var:K12 min:1 max:100 category: "K12";
-	parameter "K13: " var:K13 min:1 max:100 category: "K13";
-	parameter "K14: " var:K14 min:1 max:100 category: "K14";
-	parameter "K15: " var:K15 min:1 max:100 category: "K15";
-	*/
+	//parameter "Catalyst: " var:initial_cat min:1 max:200 category:"Catalyst agents";
+	//parameter "Sulfide: " var:initial_sulfide min:0 max:500 category:"S2 agents";
+	//parameter "Sulfite: " var:initial_sulfite min:0 max:500 category:"SO3 agents";
 	 
 	output{
 		//shows all agents involved in the hydrogen reaction
@@ -568,6 +551,7 @@ experiment now type:gui {
 		}
 		*/
 		//displays a chart indicating the number of molecules of each agent over time
+		/*
 		display Graphical{
 			chart "Molecules vs Time"{
 				data "Photon" value:length(photon) color:#yellow;
@@ -582,12 +566,13 @@ experiment now type:gui {
 		monitor "Sulfide" value:length(sulfide);
 		monitor "Sulfite" value:length(sulfite);
 		monitor "Hydrogen" value:length(hydrogen);
+		*/
 	}
 }
 
 experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){
 	parameter "Batch Code" var: batchCode among: ["model1c_cat"];
-	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
+	parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
 	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	//parameter "Run:" var: run among: [1,2,3];
