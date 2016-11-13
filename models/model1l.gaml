@@ -1,8 +1,8 @@
-model model0	//base
+model model1l	//lives + k1c + bounce2 + equilibrium
 
 global{
 	//batch variables
-	string batchCode <- "model0";
+	string batchCode <- "model1l";
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
@@ -123,7 +123,6 @@ global{
 		if (run = 1 and hour4 = false){
 			save ["run", "time", "cat", "S", "SO3", "H2"] to: batchCode+".csv" type:csv;
 		}
-	
 	}
 	
 	reflex updateLight {
@@ -144,6 +143,7 @@ global{
 }
 
 species cat skills:[moving3D]{ //catalyst
+	int lives <- 188;
 	reflex move{
 		do wander_3D;
 		
@@ -155,7 +155,7 @@ species cat skills:[moving3D]{ //catalyst
 		}
 	}
 	reflex forward1 when: (length(photon at_distance collision_range)>=1){
-		if (rnd_float(100)<K1){ //reaction 1: hv (photon) + cat -> electron + hole
+		if (rnd_float(100)<K1*(1-10*((length(cat)*(4*#pi*(3^3)/3)+length(HS2)*(4*#pi*(2^3)/3))/(side^3)))){ //reaction 1: hv (photon) + cat -> electron + hole
 			create electron number:1{
 				location <- myself.location;
 				do move speed:0.5 heading:rnd(360);
@@ -166,6 +166,15 @@ species cat skills:[moving3D]{ //catalyst
 			}
 			ask photon closest_to self{
 				do die;
+			}
+			lives <- lives - 1;
+			if (lives <= 0){
+				do die;
+			}
+		}
+		else {
+			ask photon closest_to self{
+				do move speed:5 heading:180;
 			}
 		}
 	}
@@ -372,7 +381,7 @@ species sulfite skills:[moving3D]{ //SO3 2- sulfite
 		do wander_3D;
 	}
 	reflex forward6 when: (length(cat at_distance collision_range)>=1){
-		if (rnd_float(100)<K6){ //reaction 6: cat + SO3 2- -> cat-SO3 2- 
+		if (rnd_float(100)<K6 and length(cat_sulfite)<100){ //reaction 6: cat + SO3 2- -> cat-SO3 2- 
 			create cat_sulfite number:1{
 				location <- myself.location;
 			}
@@ -479,6 +488,11 @@ species HS2 skills:[moving3D]{ //HS2 -
 			do die;
 		}
 	}
+	reflex bounce when: (length(photon at_distance collision_range)>=1){
+		ask photon closest_to self{
+			do move speed:5 heading:180;
+		}
+	}
 	aspect base{
 		draw sphere(2) color:#yellowgreen;
 	}
@@ -568,10 +582,10 @@ experiment now type:gui {
 }
 
 experiment batch type:batch repeat:1 until: ((cycle = (cph*4)+1 and hour4 = true) or (cycle = (cph*8)+1 and hour4 = false)){
-	parameter "Batch Code" var: batchCode among: ["model0"];
-	parameter "4th Hour" var:hour4 among: [false];
+	parameter "Batch Code" var: batchCode among: ["model1l_S"];
+	//parameter "4th Hour" var:hour4 among: [false];
 	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
-	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
+	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
 }
