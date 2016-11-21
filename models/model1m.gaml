@@ -1,8 +1,8 @@
-model model1l	//lives + k1c + bounce2 + equilibrium
+model model1m	//lives + k1c + bounce2 + equilibrium2
 
 global{
 	//batch variables
-	string batchCode <- "model1l";
+	string batchCode <- "";
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
@@ -140,7 +140,7 @@ global{
 }
 
 species cat skills:[moving3D]{ //catalyst
-	int lives <- 188;
+	int lives <- 188;	//#Lives
 	reflex move{
 		do wander_3D;
 		
@@ -381,7 +381,7 @@ species sulfite skills:[moving3D]{ //SO3 2- sulfite
 		do wander_3D;
 	}
 	reflex forward6 when: (length(cat at_distance collision_range)>=1){
-		if (rnd_float(100)<K6 and length(cat_sulfite)<100){ //reaction 6: cat + SO3 2- -> cat-SO3 2- 
+		if (rnd_float(100)<K6 and length(cat_sulfite)<80){ //reaction 6: cat + SO3 2- -> cat-SO3 2- #Equilibrium 
 			create cat_sulfite number:1{
 				location <- myself.location;
 			}
@@ -582,9 +582,9 @@ experiment now type:gui {
 }
 
 experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){//cycle = (cph*8)+1)){
-	parameter "Batch Code" var: batchCode among: ["model1l"];
+	parameter "Batch Code" var: batchCode among: ["model1m_S"];
 	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
-	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
+	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
 }
