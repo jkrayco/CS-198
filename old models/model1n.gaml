@@ -1,4 +1,4 @@
-model model1m	//lives + k1c + bounce2 + equilibrium2
+model model1n	//lives + k1c + bounce3 + equilibrium2
 
 global{
 	//batch variables
@@ -6,6 +6,8 @@ global{
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
+	int bounce <- 5;
+	bool hour4 <- true;
 	
 	//environment
 	int environmentWidth <- side;	//x-axis
@@ -117,7 +119,9 @@ global{
 			location <- {rnd(environmentWidth),rnd(environmentHeight),rnd(environmentLength)};
 		}
 		if (run = 1){
-			save ["run", "cat", "S", "SO3", "H2", "photon", "electron", "hole", "cat_H2O", "HS", "OH", "cat_HS", "cat_sulfite", "cat_H", "cat_OH", "cat_HS0", "cat_S0", "cat_HS2", "HS2", "S2O3", "cat_S2O3"] to: batchCode+"_hour4.csv" type:csv;
+			if (hour4 = true){
+				save ["run", "cat", "S", "SO3", "H2", "photon", "electron", "hole", "cat_H2O", "HS", "OH", "cat_HS", "cat_sulfite", "cat_H", "cat_OH", "cat_HS0", "cat_S0", "cat_HS2", "HS2", "S2O3", "cat_S2O3"] to: batchCode+"_hour4.csv" type:csv;
+				}
 			save ["run", "time", "cat", "S", "SO3", "H2", "photon", "electron", "hole", "cat_H2O", "HS", "OH", "cat_HS", "cat_sulfite", "cat_H", "cat_OH", "cat_HS0", "cat_S0", "cat_HS2", "HS2", "S2O3", "cat_S2O3"] to: batchCode+".csv" type:csv;
 		}
 	}
@@ -129,7 +133,7 @@ global{
 	}
 	reflex updateOutput{
 		//saves the number of hydrogen produced on 4th hour in a csv file
-		if (cycle = cph*4){
+		if (cycle = cph*4 and hour4 = true){
 			save [run, length(cat), length(sulfide), length(sulfite), length(hydrogen), length(photon), length(electron), length(hole), length(cat_H2O), length(HS), length(OH), length(cat_HS), length(cat_sulfite), length(cat_H), length(cat_OH), length(cat_HS0), length(cat_S0), length(cat_HS2), length(HS2), length(S2O3), length(cat_S2O3)] to: batchCode+"_hour4.csv" type:csv;
 		}
 		//saves the number of hydrogen produced per cycle-hour in a csv file
@@ -140,7 +144,7 @@ global{
 }
 
 species cat skills:[moving3D]{ //catalyst
-	int lives <- 188;	//#Lives
+	int lives <- 188;
 	reflex move{
 		do wander_3D;
 		
@@ -172,7 +176,7 @@ species cat skills:[moving3D]{ //catalyst
 		}
 		else {
 			ask photon closest_to self{
-				do move speed:5 heading:180;
+				do move speed:bounce heading:180;
 			}
 		}
 	}
@@ -490,7 +494,7 @@ species HS2 skills:[moving3D]{ //HS2 -
 	}
 	reflex bounce when: (length(photon at_distance collision_range)>=1){
 		ask photon closest_to self{
-			do move speed:5 heading:180;
+			do move speed:bounce heading:180;
 		}
 	}
 	aspect base{
@@ -581,10 +585,12 @@ experiment now type:gui {
 	}
 }
 
-experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){//cycle = (cph*8)+1)){
-	parameter "Batch Code" var: batchCode among: ["model1m_S"];
+experiment batch type:batch repeat:1 until: ((cycle = (cph*4)+1 and hour4 = true) or (cycle = (cph*8)+1)){
+	parameter "Batch Code" var: batchCode among: ["model1n_bounce45"];
+	parameter "4th Hour" var: hour4 among: [false];
+	parameter "Bounce" var: bounce among: [4,5];
 	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
-	parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
+	//parameter "Sulfide:" var: initial_sulfide among:[12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among:[24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
 }

@@ -1,6 +1,25 @@
 model main	//lives + k1c + bounce2 + equilibrium
-import "../models/myGlobal.gaml"
-import "../models/mySpecies.gaml"
+import "../models/initialize.gaml"
+import "../models/parameters.gaml"
+import "../models/species_list.gaml"
+
+global {
+	reflex updateLight {
+		create photon number:((initial_photon-length(photon))*rnd(200)/100){
+			location <- {0,rnd(environment_height),rnd(environment_length)}; //new photons arrive
+		}
+	}
+	reflex updateOutput{
+		//saves the number of hydrogen produced on 4th hour in a csv file
+		if (cycle = cph*4){
+			save [run, length(cat), length(sulfide), length(sulfite), length(hydrogen), length(photon), length(electron), length(hole), length(cat_H2O), length(HS), length(OH), length(cat_HS), length(cat_sulfite), length(cat_H), length(cat_OH), length(cat_HS0), length(cat_S0), length(cat_HS2), length(HS2), length(S2O3), length(cat_S2O3)] to: batchCode+"_hour4.csv" type:csv;
+		}
+		//saves the number of hydrogen produced per cycle-hour in a csv file
+		if (mod(cycle,cph) = 0){
+			save [run, cycle/cph, length(cat), length(sulfide), length(sulfite), length(hydrogen), length(photon), length(electron), length(hole), length(cat_H2O), length(HS), length(OH), length(cat_HS), length(cat_sulfite), length(cat_H), length(cat_OH), length(cat_HS0), length(cat_S0), length(cat_HS2), length(HS2), length(S2O3), length(cat_S2O3)] to: batchCode+".csv" type:csv;
+		}
+	}
+}
 
 //experiment now type:gui {
 experiment now type:gui {
@@ -14,7 +33,7 @@ experiment now type:gui {
 		/*
 		 * display all type:opengl{
 			graphics "env"{
-				draw box(environmentWidth,environmentHeight,environmentLength) color:#black empty:true;
+				draw box(environment_width,environment_height,environment_length) color:#black empty:true;
 			}
 			species photon aspect:base;
 			species cat aspect:base;
@@ -26,7 +45,7 @@ experiment now type:gui {
 		//shows the main agents involved in the hydrogen reaction
 		display Visual type:opengl{
 			graphics "env"{
-				draw box(environmentWidth,environmentHeight,environmentLength) color:#black empty:true;
+				draw box(environment_width,environment_height,environment_length) color:#black empty:true;
 			}
 			species photon aspect:base;
 			species cat aspect:base;
