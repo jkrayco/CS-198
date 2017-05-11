@@ -3,6 +3,31 @@ import "../models/parameters.gaml"
 import "../models/species_speed.gaml"
 
 species parent_species skills:[moving3D]{ //catalyst	
+	float K1_b{
+		return K1*(1-10*((length(cat)*(4*#pi*(3^3)/3)+length(HS2)*(4*#pi*(2^3)/3))/(side^3)));
+	}	
+	float K1_F_ext{
+		float x <- list(location)[0];
+		float r <- (70*11/10 + x);
+		float cos_theta <- 1.0;
+		float cos_theta_max <- cos(0);
+		float r_min <- 70*11/10;
+		/*
+		ask photon closest_to self{
+			float this_x <- abs(x - list(self.location)[0]);
+			float this_r <- abs(self distance_to myself);
+			cos_theta <- this_x/this_r;
+		}
+		*/
+		float result <- (cos_theta/(2*#pi*r))/(cos_theta_max/(2*#pi*r_min));
+		/*
+		if (result >= 1 - K1/100){
+			write result;
+		}
+		* 
+		*/
+		return result;
+	}
 	action reaction_photon {
 		ask self{
 			do goto speed:speed_of_photon target:{environment_width,myself.location.y,myself.location.z}; //to move in one direction
@@ -10,10 +35,10 @@ species parent_species skills:[moving3D]{ //catalyst
 			if (myself.location.x>(environment_width-5)){ //dies when it reaches the other side
 				do die;
 			}
-		}	
+		}
 	}
 	int reaction_1(int lives) {
-		if (rnd_float(100)<K1*(1-10*((length(cat)*(4*#pi*(3^3)/3)+length(HS2)*(4*#pi*(2^3)/3))/(side^3)))){ //reaction 1: hv (photon) + cat -> electron + hole
+		if (rnd(100) < K1_b() and K1_F_ext() >= 0.40){ //reaction 1: hv (photon) + cat -> electron + hole
 			create electron number:1{
 				location <- myself.location;
 				do move speed:0.5 heading:rnd(360);

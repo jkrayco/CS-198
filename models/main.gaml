@@ -2,10 +2,11 @@ model main	//lives + k1c + bounce2 + equilibrium
 import "../models/initialize.gaml"
 import "../models/parameters.gaml"
 import "../models/species_list.gaml"
+import "../models/reaction_list.gaml"
 
 global {
 	reflex updateLight {
-		create photon number:((initial_photon-length(photon))*rnd(200)/100){
+		create photon number:(initial_photon-length(photon)){
 			location <- {0,rnd(environment_height),rnd(environment_length)}; //new photons arrive
 		}
 	}
@@ -43,6 +44,7 @@ experiment now type:gui {
 			species hydrogen aspect:base;
 		}*/
 		//shows the main agents involved in the hydrogen reaction
+		
 		display Visual type:opengl{
 			graphics "env"{
 				draw box(environment_width,environment_height,environment_length) color:#black empty:true;
@@ -54,6 +56,7 @@ experiment now type:gui {
 			species cat_H aspect:base;
 			species hydrogen aspect:base;
 		}
+		
 		//displays a chart indicating the number of molecules of each agent over time
 		
 		display Graphical{
@@ -66,17 +69,19 @@ experiment now type:gui {
 				data "Hydrogen" value:length(hydrogen) color:#cyan;
 			}
 		}
+
 		monitor "Catalyst" value:length(cat);
 		monitor "Sulfide" value:length(sulfide);
 		monitor "Sulfite" value:length(sulfite);
+		monitor "HS2" value:length(HS2);
 		monitor "Hydrogen" value:length(hydrogen);
 	}
 }
 
-experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){//cycle = (cph*8)+1)){
-	parameter "Batch Code" var: batchCode among: ["model1l_SO3"];
-	//parameter "Catalyst:" var: initial_cat among: list_cat;
-	//parameter "Sulfide:" var: initial_sulfide among: list_sulfide;
-	parameter "Sulfite:" var: initial_sulfite among: list_sulfite;
+experiment batch type:batch repeat:1 until: (cycle = (cph*8)+1){//cycle = (cph*8)+1)){
+	parameter "Batch Code" var: batchCode among: ["model_newbase"];
+	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
+	//parameter "Sulfide:" var: initial_sulfide among: [12, 24, 60, 120, 240, 720];
+	//parameter "Sulfite:" var: initial_sulfite among: [24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
 }

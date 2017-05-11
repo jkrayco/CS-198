@@ -3,7 +3,7 @@ import "../models/species_list.gaml"
 
 global{
 	//batch variables
-	string batchCode <- "model1l";
+	string batchCode <- "model_newbase";
 	int cph <- int(2100/4);
 	int run <- 1;
 	int side <- 70;
@@ -37,7 +37,7 @@ global{
 	int initial_catS2O3 <- 0;
 	
 	//initial number of variable objects
-	list list_cat <- [100, 300, 400, 800];
-	list list_sulfide <- [12, 24, 60, 120, 240, 720];
-	list list_sulfite <- [24, 60, 120, 240, 720];
+	//int list_cat <- [100, 300, 400, 800];
+	//int list_sulfide <- [12, 24, 60, 120, 240, 720];
+	//int list_sulfite <- [24, 60, 120, 240, 720];
 }
