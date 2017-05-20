@@ -78,10 +78,10 @@ experiment now type:gui {
 	}
 }
 
-experiment batch type:batch repeat:1 until: (cycle = (cph*8)+1){//cycle = (cph*8)+1)){
-	parameter "Batch Code" var: batchCode among: ["model_newbase"];
+experiment batch type:batch repeat:1 until: (cycle = (cph*4)+1){//cycle = (cph*8)+1)){
+	parameter "Batch Code" var: batchCode among: ["model_newbase_S"];
 	//parameter "Catalyst:" var: initial_cat among: [100, 300, 400, 800];
-	//parameter "Sulfide:" var: initial_sulfide among: [12, 24, 60, 120, 240, 720];
+	parameter "Sulfide:" var: initial_sulfide among: [12, 24, 60, 120, 240, 720];
 	//parameter "Sulfite:" var: initial_sulfite among: [24, 60, 120, 240, 720];
 	parameter "Run:" var: run among: [1,2,3];
 }

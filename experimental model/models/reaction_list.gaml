@@ -3,11 +3,14 @@ import "../models/parameters.gaml"
 import "../models/species_speed.gaml"
 
 species parent_species skills:[moving3D]{ //catalyst	
-	float K1_b{
-		return K1*(1-10*((length(cat)*(4*#pi*(3^3)/3)+length(HS2)*(4*#pi*(2^3)/3))/(side^3)));
-	}	
+	//K1
+	float K1_c{
+		float x <- ((length(cat)*(4*#pi*(cat_size^3)/6)+length(HS2)*(4*#pi*(sulfur_size^3)/6))/(side^3));
+		K1c <-1-k*((x)^(1/2));
+		return K1c;
+	}
 	float K1_F_ext{
-		float x <- list(location)[0];
+		float x <- location.x;
 		float r <- (70*11/10 + x);
 		float cos_theta <- 1.0;
 		float cos_theta_max <- cos(0);
@@ -19,26 +22,20 @@ species parent_species skills:[moving3D]{ //catalyst
 			cos_theta <- this_x/this_r;
 		}
 		*/
-		float result <- (cos_theta/(2*#pi*r))/(cos_theta_max/(2*#pi*r_min));
-		/*
-		if (result >= 1 - K1/100){
-			write result;
-		}
-		* 
-		*/
+		float result <- (cos_theta/(4*#pi*r^2))/(cos_theta_max/(4*#pi*r_min^2));
 		return result;
 	}
 	action reaction_photon {
 		ask self{
-			do goto speed:speed_of_photon target:{environment_width,myself.location.y,myself.location.z}; //to move in one direction
-			do move speed:(speed_of_photon*3) heading:rnd(360); //to wiggle a little
-			if (myself.location.x>(environment_width-5)){ //dies when it reaches the other side
+			do goto speed:3*photon_speed target:{environment_width,myself.location.y,myself.location.z}; //to move in one direction
+			//do move speed:(photon_speed*3) heading:rnd(360); //to wiggle a little
+			if (myself.location.x>=(environment_width)){ //dies when it reaches the other side
 				do die;
 			}
 		}
 	}
 	int reaction_1(int lives) {
-		if (rnd(100) < K1_b() and K1_F_ext() >= K1/100){ //reaction 1: hv (photon) + cat -> electron + hole
+		if (K1_F_ext() >= 2/3 and rnd_float(100) < K1*K1_c()){ //reaction 1: hv (photon) + cat -> electron + hole
 			create electron number:1{
 				location <- myself.location;
 				do move speed:0.5 heading:rnd(360);
@@ -50,14 +47,16 @@ species parent_species skills:[moving3D]{ //catalyst
 			ask photon closest_to self{
 				do die;
 			}
+			//lives
 			lives <- lives - 1;
 			if (lives <= 0){
 				do die;
 			}
 		}
 		else {
+			//bounce
 			ask photon closest_to self{
-				do move speed:5 heading:180;
+				do goto speed:3*photon_speed target:{-myself.location.x,-myself.location.y,-myself.location.z};
 			}
 		}
 		return lives;
@@ -104,6 +103,7 @@ species parent_species skills:[moving3D]{ //catalyst
 		}		
 	}
 	action reaction_6{
+		//equillibrium
 		if (rnd_float(100)<K6 and length(cat_sulfite)<100){ //reaction 6: cat + SO3 2- -> cat-SO3 2- 
 			create cat_sulfite number:1{
 				location <- myself.location;
