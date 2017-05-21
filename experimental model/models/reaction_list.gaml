@@ -4,10 +4,14 @@ import "../models/species_speed.gaml"
 
 species parent_species skills:[moving3D]{ //catalyst	
 	//K1
-	float K1_c{
-		float x <- ((length(cat)*(4*#pi*(cat_size^3)/6)+length(HS2)*(4*#pi*(sulfur_size^3)/6))/(side^3));
-		K1c <-1-k*((x)^(1/2));
-		return K1c;
+	float K1_d{
+//		float x <- ((length(cat)*(4*#pi*(cat_size^3)/6)+length(HS2)*(4*#pi*(sulfur_size^3)/6))/(side^3));
+		int t <- length(cat);
+		int t0 <- 300;
+		float x <- (-1.4571*10^(-8))*(t^4) + (6.0454*10^(-9))*(t^3) + (-8.5972*10^(-10))*(t^2) + (-2.6055*10^2)*t + (3.6791*10);
+		float x0 <- (-1.4571*10^(-8))*(t0^4) + (6.0454*10^(-9))*(t0^3) + (-8.5972*10^(-10))*(t0^2) + (-2.6055*10^2)*t0 + (3.6791*10);
+		K1d <- x/abs(x0) + 1;
+		return K1d;
 	}
 	float K1_F_ext{
 		float x <- location.x;
@@ -35,7 +39,7 @@ species parent_species skills:[moving3D]{ //catalyst
 		}
 	}
 	int reaction_1(int lives) {
-		if (K1_F_ext() >= 2/3 and rnd_float(100) < K1*K1_c()){ //reaction 1: hv (photon) + cat -> electron + hole
+		if (rnd_float(100) < K1*K1_d() and length(cat) <= 400){ //reaction 1: hv (photon) + cat -> electron + hole
 			create electron number:1{
 				location <- myself.location;
 				do move speed:0.5 heading:rnd(360);

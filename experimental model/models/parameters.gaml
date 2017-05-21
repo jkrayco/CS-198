@@ -3,7 +3,7 @@ import "../models/species_list.gaml"
 
 global{
 	float k <- 7.0;
-	float K1c <- 0.0;
+	float K1d <- 0.0;
 	
 	//batch variables
 	string batch_code <- "model";

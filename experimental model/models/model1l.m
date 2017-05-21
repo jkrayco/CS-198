@@ -7,7 +7,6 @@ model = strrep(model,"_SO3","");
 model = char(unique(strrep(model,"_S","")));
 %%{
 #Time
-base = [0 1.666666667 4 6.333333333 9 10.66666667 10.66666667 11.66666667];
 exp = [2.657886 4.87845 6.262266  7.145663  7.722067  8.020709  8.139269  8.145075];
 for i = 1:rows(model)
   if (exist(strcat(model(i,:), ".csv")) == 2)
@@ -26,7 +25,7 @@ for i = 1:rows(model)
     title(strcat(strrep(model,"_", " ")," - Hydrogen VS Time (RMSE = ", num2str(RMSE(new,exp),5), " umol)"));
     xlabel("Time (in hours)");
     ylabel("Hydrogen (in umol)");
-    plot(x,new,"r;New Model;",x,base,"b;Base Model;",x,exp,"k;Experiment;");
+    plot(x,new,"r^-;New Model;",x,exp,"k*-;Experiment;");
     #text(x+0.1,new,num2str(new,"%.4f"));
     grid on;
     hold off;
@@ -34,13 +33,10 @@ for i = 1:rows(model)
     saveas(1,strcat(model(i,:),"_hour.png"));
   endif
 endfor
-pause(2);
 %}
 %%{
 #Catalyst
-pause(2);
 x = [0.025  0.075  0.1 0.2];
-base = [0 1.666666667 6 7.666666667];
 exp = [4.443349754  8.15270936  9.763546798 9.733990148];
 for i = 1:rows(model)
   thisFile = strcat(model(i,:),"_cat_hour4.csv");
@@ -54,7 +50,7 @@ for i = 1:rows(model)
     title(strcat(strrep(model,"_", " ")," - Hydrogen VS Catalyst (RMSE = ", num2str(RMSE(new,exp),5), " umol)"));
     xlabel("Catalyst (in g)");
     ylabel("Hydrogen (in umol)");
-    plot(x,new,"r;New Model;",x,base,"b;Base Model;",x,exp,"k;Experiment;");
+    plot(x,new,"r^-;New Model;",x,exp,"k*-;Experiment;");
     #text(x,new,num2str(new',"%.4f"));
     grid on;
     hold off;
@@ -62,12 +58,10 @@ for i = 1:rows(model)
     saveas(1,strcat(model(i,:),"_cat.png"));
   endif
 endfor
-pause(2);
 %}
 %%{
 #Sulfide
 x = [0.005  0.01  0.025 0.05  0.1 0.3];
-base = [7 9.666666667 9.666666667 11.33333333 7.666666667 1];
 exp = [5.374407583  9.118483412 13.17061611 13.02843602 9.805687204 2.270142182];
 for i = 1:rows(model)
   if (exist(strcat(model(i,:),"_S_hour4.csv")) == 2)
@@ -80,7 +74,7 @@ for i = 1:rows(model)
     title(strcat(strrep(model,"_", " ")," - Hydrogen VS Sulfide (RMSE = ", num2str(RMSE(new,exp),5), " umol)"));
     xlabel("Sulfide (in M)");
     ylabel("Hydrogen (in umol)");
-    plot(x,new,"r;New Model;",x,base,"b;Base Model;",x,exp,"k;Experiment;");
+    plot(x,new,"r^-;New Model;",x,exp,"k*-;Experiment;");
     #text(x,new,num2str(new',"%.4f"));
     grid on;
     hold off;
@@ -88,13 +82,10 @@ for i = 1:rows(model)
     saveas(1,strcat(model,"_S.png"));
   endif
 endfor
-pause(2);
 %}
 %%{
 #Sulfite
-pause(1);
 x = [0.01  0.025 0.05  0.1 0.3];
-base = [16 15.33333333 9 8 8.666666667 ];
 exp = [26.98305085  18.81355932 14.10169492 9.728813559 9.016949152];
 for i = 1:rows(model)
   if (exist(strcat(model(i,:),"_SO3_hour4.csv")) == 2)
@@ -107,7 +98,7 @@ for i = 1:rows(model)
     title(strcat(strrep(model,"_", " ")," - Hydrogen VS Sulfite (RMSE = ", num2str(RMSE(new,exp),5), " umol)"));
     xlabel("Sulfite (in M)");
     ylabel("Hydrogen (in umol)");
-    plot(x,new,"r;New Model;",x,base,"b;Base Model;",x,exp,"k;Experiment;");
+    plot(x,new,"r^-;New Model;",x,exp,"k*-;Experiment;");
     #text(x,new,num2str(new',"%.4f"));
     grid on;
     hold off;

@@ -4,7 +4,7 @@ global{
 	//rates of the 15 reactions
 	float K1 <- 28.0;	//hv + cat -> cat + electron + hole				
 	float K2 <- 98.0;	//electron + hole -> {} 						
-	float K3 <- 0.030;	//cat + H2O -> cat-H2O 							
+	float K3 <- 0.03*1.05;	//cat + H2O -> cat-H2O 							
 	float K4 <- 0.16;	//S 2- + H2O -> HS- + OH -						
 	float K5 <- 90.00;	//cat + HS - -> cat-HS -							
 	float K6 <- 0.30;	//cat + SO3 2- -> cat-SO3 2-						
